@@ -407,28 +407,38 @@ const App = () => {
   }
 };
 
-  const handleClaim = async () => {
-    if (!claimOwner.trim()) {
-      setError('Please enter the original owner address');
-      return;
-    }
+   const handleClaim = async () => {
+  if (!claimOwner.trim()) {
+    setError('Please enter the original owner address');
+    return;
+  }
 
-    setState(prev => ({ ...prev, loading: true }));
-    try {
-      const result = await state.actor.claim(claimOwner);
-      if ('ok' in result) {
-        setSuccess(result.ok);
-        setClaimOwner('');
-        await loadUserData(state.actor);
-      } else {
-        setError(result.err);
-      }
-    } catch (error) {
-      setError('Claim failed');
-    } finally {
-      setState(prev => ({ ...prev, loading: false }));
+  // Validate Principal format (same as handleSetBackup)
+  let originalOwnerPrincipal;
+  try {
+    originalOwnerPrincipal = Principal.fromText(claimOwner.trim());
+  } catch (error) {
+    setError('Invalid original owner address format. Please enter a valid Principal ID.');
+    return;
+  }
+
+  setState(prev => ({ ...prev, loading: true }));
+  try {
+    const result = await state.actor.claim(originalOwnerPrincipal);
+    if ('ok' in result) {
+      setSuccess(result.ok);
+      setClaimOwner('');
+      await loadUserData(state.actor);
+    } else {
+      setError(result.err);
     }
-  };
+  } catch (error) {
+    console.error('Claim error:', error);
+    setError('Claim failed: ' + error.message);
+  } finally {
+    setState(prev => ({ ...prev, loading: false }));
+  }
+};
 
   const isTimeoutExpired = () => {
     if (!userStatus) return false;
