@@ -255,7 +255,7 @@ If you encounter any problems, please [open an issue](https://github.com/youruse
 - Detailed description
 - Steps to reproduce
 - Environment information
-- Screenshots (if applicable)
+- Screenshots 
 
 ## 🏆 Acknowledgments
 
